@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Increase & GP Fund Calculator</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --success: #15803d;
+            --success-bg: #f0fdf4;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 6px 0 0;
+            font-size: 0.85rem;
+            opacity: 0.85;
+        }
+
+        .content {
+            padding: 24px 20px;
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            background-color: #f8fafc;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary-light);
+            outline: none;
+            background-color: #fff;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            margin: 20px 0;
+        }
+
+        .breakdown-card {
+            background-color: #f8fafc;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 0.875rem;
+        }
+
+        .metric-row.bold {
+            font-weight: 600;
+            color: var(--text);
+            border-top: 1px dashed var(--border);
+            margin-top: 6px;
+            padding-top: 10px;
+        }
+
+        .value-green { color: #16a34a; }
+        .value-red { color: #dc2626; }
+
+        .result-box {
+            background-color: var(--success-bg);
+            border: 1.5px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .result-box .label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #166534;
+            text-transform: uppercase;
+        }
+
+        .result-box .amount {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--success);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>💰 Salary Increase Calculator</h1>
+        <p>Created By Ghulam Fareed Suhriyani — Primary School Teacher</p>
+    </div>
+
+    <div class="content">
+        <div class="section-title">Employee Input Parameters</div>
+        
+        <div class="form-group">
+            <label for="bpsSelect">Select BPS Grade</label>
+            <select id="bpsSelect" onchange="calculate()"></select>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="oldPayInput">Old Basic Pay (PKR)</label>
+                <input type="number" id="oldPayInput" value="82310" step="10" oninput="calculate()">
+            </div>
+            <div class="form-group">
+                <label for="newPayInput">Basic Pay 2026 (PKR)</label>
+                <input type="number" id="newPayInput" value="99000" step="10" oninput="calculate()">
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-title">Calculation Breakdown</div>
+
+        <div class="breakdown-card">
+            <div class="metric-row">
+                <span>7% Pay Increase</span>
+                <span id="val7Inc">PKR 0</span>
+            </div>
+            <div class="metric-row">
+                <span>2% Differential</span>
+                <span id="val2Diff">PKR 0</span>
+            </div>
+            <div class="metric-row bold">
+                <span>Total Pay Increase (7% + 2%)</span>
+                <span id="valTotalPayInc">PKR 0</span>
+            </div>
+        </div>
+
+        <div class="breakdown-card">
+            <div class="metric-row">
+                <span>Conveyance Allowance Increase</span>
+                <span class="value-green" id="valConvInc">+PKR 0</span>
+            </div>
+            <div class="metric-row">
+                <span>GP Fund Deduction Increase</span>
+                <span class="value-red" id="valGpfInc">-PKR 0</span>
+            </div>
+        </div>
+
+        <div class="result-box">
+            <div class="label">Total Net Salary Increase</div>
+            <div class="amount" id="valNetIncrease">PKR 0 / month</div>
+        </div>
+    </div>
+</div>
+
+<script>
+const bpsReference = {
+    1:  { oldConv: 1785, newConv: 2678, oldGpf: 600,   newGpf: 730 },
+    2:  { oldConv: 1785, newConv: 2678, oldGpf: 1060,  newGpf: 1280 },
+    3:  { oldConv: 1785, newConv: 2678, oldGpf: 1150,  newGpf: 1390 },
+    4:  { oldConv: 1785, newConv: 2678, oldGpf: 1230,  newGpf: 1490 },
+    5:  { oldConv: 1932, newConv: 2898, oldGpf: 1330,  newGpf: 1600 },
+    6:  { oldConv: 1932, newConv: 2898, oldGpf: 1420,  newGpf: 1710 },
+    7:  { oldConv: 1932, newConv: 2898, oldGpf: 1500,  newGpf: 1810 },
+    8:  { oldConv: 1932, newConv: 2898, oldGpf: 1600,  newGpf: 1930 },
+    9:  { oldConv: 1932, newConv: 2898, oldGpf: 1700,  newGpf: 2040 },
+    10: { oldConv: 1932, newConv: 2898, oldGpf: 1800,  newGpf: 2160 },
+    11: { oldConv: 2856, newConv: 4284, oldGpf: 1920,  newGpf: 2310 },
+    12: { oldConv: 2856, newConv: 4284, oldGpf: 3300,  newGpf: 3970 },
+    13: { oldConv: 2856, newConv: 4284, oldGpf: 3570,  newGpf: 4290 },
+    14: { oldConv: 2856, newConv: 4284, oldGpf: 3900,  newGpf: 4680 },
+    15: { oldConv: 2856, newConv: 4284, oldGpf: 4290,  newGpf: 5160 },
+    16: { oldConv: 5000, newConv: 7500, oldGpf: 4960,  newGpf: 5970 },
+    17: { oldConv: 5000, newConv: 7500, oldGpf: 6350,  newGpf: 7620 },
+    18: { oldConv: 5000, newConv: 7500, oldGpf: 7960,  newGpf: 9570 },
+    19: { oldConv: 5000, newConv: 7500, oldGpf: 10660, newGpf: 12810 },
+    20: { oldConv: 5000, newConv: 7500, oldGpf: 11950, newGpf: 14350 },
+    21: { oldConv: 5000, newConv: 7500, oldGpf: 13260, newGpf: 15930 },
+    22: { oldConv: 5000, newConv: 7500, oldGpf: 14660, newGpf: 17610 }
+};
+
+const bpsSelect = document.getElementById('bpsSelect');
+for (let grade = 1; grade <= 22; grade++) {
+    const option = document.createElement('option');
+    option.value = grade;
+    option.textContent = `BPS-${grade < 10 ? '0' + grade : grade}`;
+    if (grade === 16) option.selected = true;
+    bpsSelect.appendChild(option);
+}
+
+function formatCurrency(val) {
+    return 'PKR ' + Math.round(val).toLocaleString();
+}
+
+function calculate() {
+    const grade = parseInt(document.getElementById('bpsSelect').value);
+    const oldPay = parseFloat(document.getElementById('oldPayInput').value) || 0;
+    const newPay = parseFloat(document.getElementById('newPayInput').value) || 0;
+
+    const inc7 = Math.round(newPay * 0.07);
+    const diff2 = Math.round(oldPay * 0.02);
+    const totalPayInc = inc7 + diff2;
+
+    const ref = bpsReference[grade] || { oldConv: 0, newConv: 0, oldGpf: 0, newGpf: 0 };
+    const convInc = ref.newConv - ref.oldConv;
+    const gpfInc = ref.newGpf - ref.oldGpf;
+
+    const totalNetIncrease = totalPayInc + convInc - gpfInc;
+
+    document.getElementById('val7Inc').textContent = formatCurrency(inc7);
+    document.getElementById('val2Diff').textContent = formatCurrency(diff2);
+    document.getElementById('valTotalPayInc').textContent = formatCurrency(totalPayInc);
+    document.getElementById('valConvInc').textContent = '+' + formatCurrency(convInc);
+    document.getElementById('valGpfInc').textContent = '-' + formatCurrency(gpfInc);
+    document.getElementById('valNetIncrease').textContent = formatCurrency(totalNetIncrease) + ' / month';
+}
+
+calculate();
+</script>
+
+</body>
+</html>
